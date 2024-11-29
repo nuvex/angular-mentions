@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { COMMON_NAMES } from '../common-names';
-import { MentionConfig } from 'angular-mentions';
+import { MentionConfig, MentionDirective } from 'angular-mentions';
 
 @Component({
   selector: 'app-demo-config',
+  imports: [MentionDirective],
+  standalone: true,
   templateUrl: './demo-config.component.html'
 })
 export class DemoConfigComponent {

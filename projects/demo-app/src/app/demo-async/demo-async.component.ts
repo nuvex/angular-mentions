@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable, Subject, debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { MentionDirective } from 'angular-mentions';
+import {AsyncPipe} from "@angular/common";
 
 @Component({
   selector: 'app-demo-async',
+  imports: [MentionDirective, AsyncPipe],
+  standalone: true,
   templateUrl: './demo-async.component.html'
 })
 export class DemoAsyncComponent implements OnInit {

@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { MentionDirective } from 'angular-mentions';
 
 // import { COMMON_NAMES } from '../common-names';
 
 @Component({
   selector: 'app-demo-template',
+  standalone: true,
+  imports: [MentionDirective],
   templateUrl: './demo-template.component.html'
 })
 export class DemoTemplateComponent {

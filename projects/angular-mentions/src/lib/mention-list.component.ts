@@ -1,9 +1,17 @@
 import {
-  Component, ElementRef, Output, EventEmitter, ViewChild, Input, TemplateRef, AfterContentChecked
+  AfterContentChecked,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  TemplateRef,
+  ViewChild
 } from '@angular/core';
 
-import { isInputOrTextAreaElement, getContentEditableCaretCoords } from './mention-utils';
-import { getCaretCoordinates } from './caret-coords';
+import {getContentEditableCaretCoords, isInputOrTextAreaElement} from './mention-utils';
+import {getCaretCoordinates} from './caret-coords';
+import {NgForOf, NgTemplateOutlet} from '@angular/common';
 
 /**
  * Angular Mentions.
@@ -14,36 +22,43 @@ import { getCaretCoordinates } from './caret-coords';
 @Component({
   selector: 'mention-list',
   styleUrls: ['./mention-list.component.scss'],
+  standalone: true,
+  imports: [
+    NgTemplateOutlet,
+    NgForOf
+  ],
   template: `
     <ng-template #defaultItemTemplate let-item="item">
-      {{item[labelKey]}}
+      {{ item[labelKey] }}
     </ng-template>
     <ul #list [hidden]="hidden" class="dropdown-menu scrollable-menu"
-      [class.mention-menu]="!styleOff" [class.mention-dropdown]="!styleOff && dropUp">
+        [class.mention-menu]="!styleOff" [class.mention-dropdown]="!styleOff && dropUp">
       <li *ngFor="let item of items; let i = index"
-        [class.active]="activeIndex==i" [class.mention-active]="!styleOff && activeIndex==i">
+          [class.active]="activeIndex==i" [class.mention-active]="!styleOff && activeIndex==i">
         <a class="dropdown-item" [class.mention-item]="!styleOff"
-          (mousedown)="activeIndex=i;itemClick.emit();$event.preventDefault()">
+           (mousedown)="activeIndex=i;itemClick.emit();$event.preventDefault()">
           <ng-template [ngTemplateOutlet]="itemTemplate" [ngTemplateOutletContext]="{'item':item}"></ng-template>
         </a>
       </li>
     </ul>
-    `
+  `
 })
 export class MentionListComponent implements AfterContentChecked {
-  @Input() labelKey: string = 'label';
+  @Input() labelKey = 'label';
   @Input() itemTemplate: TemplateRef<any>;
   @Output() itemClick = new EventEmitter();
-  @ViewChild('list', { static: true }) list: ElementRef;
-  @ViewChild('defaultItemTemplate', { static: true }) defaultItemTemplate: TemplateRef<any>;
+  @ViewChild('list', {static: true}) list: ElementRef;
+  @ViewChild('defaultItemTemplate', {static: true}) defaultItemTemplate: TemplateRef<any>;
   items = [];
-  activeIndex: number = 0;
-  hidden: boolean = false;
-  dropUp: boolean = false;
-  styleOff: boolean = false;
-  private coords: {top:number, left:number} = {top:0, left:0};
-  private offset: number = 0;
-  constructor(private element: ElementRef) {}
+  activeIndex = 0;
+  hidden = false;
+  dropUp = false;
+  styleOff = false;
+  private coords: { top: number, left: number } = {top: 0, left: 0};
+  private offset = 0;
+
+  constructor(private element: ElementRef) {
+  }
 
   ngAfterContentChecked() {
     if (!this.itemTemplate) {
@@ -60,18 +75,16 @@ export class MentionListComponent implements AfterContentChecked {
       this.coords.left = nativeParentElement.offsetLeft + this.coords.left - nativeParentElement.scrollLeft;
       // getCretCoordinates() for text/input elements needs an additional offset to position the list correctly
       this.offset = this.getBlockCursorDimensions(nativeParentElement).height;
-    }
-    else if (iframe) {
-      let context: { iframe: HTMLIFrameElement, parent: Element } = { iframe: iframe, parent: iframe.offsetParent };
+    } else if (iframe) {
+      const context: { iframe: HTMLIFrameElement, parent: Element } = {iframe, parent: iframe.offsetParent};
       this.coords = getContentEditableCaretCoords(context);
-    }
-    else {
-      let doc = document.documentElement;
-      let scrollLeft = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
-      let scrollTop = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
+    } else {
+      const doc = document.documentElement;
+      const scrollLeft = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+      const scrollTop = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
       // bounding rectangles are relative to view, offsets are relative to container?
-      let caretRelativeToView = getContentEditableCaretCoords({ iframe: iframe });
-      let parentRelativeToContainer: ClientRect = nativeParentElement.getBoundingClientRect();
+      const caretRelativeToView = getContentEditableCaretCoords({iframe});
+      const parentRelativeToContainer: ClientRect = nativeParentElement.getBoundingClientRect();
       this.coords.top = caretRelativeToView.top - parentRelativeToContainer.top + nativeParentElement.offsetTop - scrollTop;
       this.coords.left = caretRelativeToView.left - parentRelativeToContainer.left + nativeParentElement.offsetLeft - scrollLeft;
     }
@@ -85,12 +98,12 @@ export class MentionListComponent implements AfterContentChecked {
 
   activateNextItem() {
     // adjust scrollable-menu offset if the next item is out of view
-    let listEl: HTMLElement = this.list.nativeElement;
-    let activeEl = listEl.getElementsByClassName('active').item(0);
+    const listEl: HTMLElement = this.list.nativeElement;
+    const activeEl = listEl.getElementsByClassName('active').item(0);
     if (activeEl) {
-      let nextLiEl: HTMLElement = <HTMLElement> activeEl.nextSibling;
-      if (nextLiEl && nextLiEl.nodeName == "LI") {
-        let nextLiRect: ClientRect = nextLiEl.getBoundingClientRect();
+      const nextLiEl: HTMLElement = activeEl.nextSibling as HTMLElement;
+      if (nextLiEl && nextLiEl.nodeName === 'LI') {
+        const nextLiRect: ClientRect = nextLiEl.getBoundingClientRect();
         if (nextLiRect.bottom > listEl.getBoundingClientRect().bottom) {
           listEl.scrollTop = nextLiEl.offsetTop + nextLiRect.height - listEl.clientHeight;
         }
@@ -102,12 +115,12 @@ export class MentionListComponent implements AfterContentChecked {
 
   activatePreviousItem() {
     // adjust the scrollable-menu offset if the previous item is out of view
-    let listEl: HTMLElement = this.list.nativeElement;
-    let activeEl = listEl.getElementsByClassName('active').item(0);
+    const listEl: HTMLElement = this.list.nativeElement;
+    const activeEl = listEl.getElementsByClassName('active').item(0);
     if (activeEl) {
-      let prevLiEl: HTMLElement = <HTMLElement> activeEl.previousSibling;
-      if (prevLiEl && prevLiEl.nodeName == "LI") {
-        let prevLiRect: ClientRect = prevLiEl.getBoundingClientRect();
+      const prevLiEl: HTMLElement = activeEl.previousSibling as HTMLElement;
+      if (prevLiEl && prevLiEl.nodeName === 'LI') {
+        const prevLiRect: ClientRect = prevLiEl.getBoundingClientRect();
         if (prevLiRect.top < listEl.getBoundingClientRect().top) {
           listEl.scrollTop = prevLiEl.offsetTop;
         }
@@ -137,18 +150,18 @@ export class MentionListComponent implements AfterContentChecked {
     //   dropUp = true;
     // }
     // if top is off page, disable dropUp
-    if (bounds.top<0) {
+    if (bounds.top < 0) {
       dropUp = false;
     }
     // set the revised/final position
     this.positionElement(left, top, dropUp);
   }
 
-  private positionElement(left:number=this.coords.left, top:number=this.coords.top, dropUp:boolean=this.dropUp) {
+  private positionElement(left: number = this.coords.left, top: number = this.coords.top, dropUp: boolean = this.dropUp) {
     const el: HTMLElement = this.element.nativeElement;
     top += dropUp ? 0 : this.offset; // top of list is next line
     el.className = dropUp ? 'dropup' : null;
-    el.style.position = "absolute";
+    el.style.position = 'absolute';
     el.style.left = left + 'px';
     el.style.top = top + 'px';
   }

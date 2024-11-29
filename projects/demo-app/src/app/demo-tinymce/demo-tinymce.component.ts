@@ -2,6 +2,7 @@ import { Component, NgZone, Input, ViewChild } from '@angular/core';
 
 import { MentionDirective } from 'angular-mentions';
 import { COMMON_NAMES } from '../common-names';
+import {EditorComponent} from "@tinymce/tinymce-angular";
 
 /**
  * Angular 2 Mentions.
@@ -11,6 +12,8 @@ import { COMMON_NAMES } from '../common-names';
  */
 @Component({
   selector: 'app-demo-tinymce',
+  standalone: true,
+  imports: [MentionDirective, EditorComponent],
   template: `
     <div class="form-group" style="position:relative">
       <div [mention]="items"></div>
@@ -18,13 +21,13 @@ import { COMMON_NAMES } from '../common-names';
         <textarea class="hidden" cols="60" rows="4" id="tmce">{{htmlContent}}</textarea>
       </div>
     </div>
-    <editor [init]="CONFIG"></editor>    
+    <editor [init]="CONFIG"></editor>
     `
 })
 export class DemoTinymceComponent {
-  @Input() htmlContent:string;
+  @Input() htmlContent: string;
   @ViewChild(MentionDirective, { static: true }) mention: MentionDirective;
-  public items:string[] = COMMON_NAMES;
+  public items: string[] = COMMON_NAMES;
   public CONFIG = {
     base_url: '/tinymce',
     suffix: '.min',
@@ -41,14 +44,15 @@ export class DemoTinymceComponent {
       bullist numlist outdent indent | removeformat | help',
     setup: this.tinySetup.bind(this)
   };
+  // tslint:disable-next-line:variable-name
   constructor(private _zone: NgZone) {}
   tinySetup(ed) {
     ed.on('init', (args) => {
       this.mention.setIframe(ed.iframeElement);
     });
     ed.on('keydown', (e) => {
-      let frame = <any>window.frames[ed.iframeElement.id];
-      let contentEditable = frame.contentDocument.getElementById('tinymce');
+      const frame = window.frames[ed.iframeElement.id] as any;
+      const contentEditable = frame.contentDocument.getElementById('tinymce');
       this._zone.run(() => {
         this.mention.keyHandler(e, contentEditable);
       });

@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
+import { MentionDirective } from 'angular-mentions';
 
 @Component({
   selector: 'app-demo-options',
+  standalone: true,
+  imports: [MentionDirective],
   templateUrl: './demo-options.component.html'
 })
 export class DemoOptionsComponent {

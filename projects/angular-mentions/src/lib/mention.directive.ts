@@ -1,8 +1,8 @@
-import { ComponentFactoryResolver, Directive, ElementRef, TemplateRef, ViewContainerRef } from "@angular/core";
-import { EventEmitter, Input, OnChanges, Output, SimpleChanges } from "@angular/core";
+import { ComponentFactoryResolver, Directive, ElementRef, TemplateRef, ViewContainerRef } from '@angular/core';
+import { EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { getCaretPosition, getValue, insertValue, setCaretPosition } from './mention-utils';
 
-import { MentionConfig } from "./mention-config";
+import { MentionConfig } from './mention-config';
 import { MentionListComponent } from './mention-list.component';
 
 const KEY_BACKSPACE = 8;
@@ -25,11 +25,12 @@ const KEY_BUFFERED = 229;
  */
 @Directive({
   selector: '[mention], [mentionConfig]',
+  standalone: true,
   host: {
     '(keydown)': 'keyHandler($event)',
     '(input)': 'inputHandler($event)',
     '(blur)': 'blurHandler($event)',
-    'autocomplete': 'off'
+    autocomplete: 'off'
   }
 })
 export class MentionDirective implements OnChanges {
@@ -60,7 +61,7 @@ export class MentionDirective implements OnChanges {
       const searchStringLowerCase = searchString.toLowerCase();
       return items.filter(e => e[this.activeConfig.labelKey].toLowerCase().startsWith(searchStringLowerCase));
     }
-  }
+  };
 
   // template to use for rendering list items
   @Input() mentionListTemplate: TemplateRef<any>;
@@ -86,14 +87,17 @@ export class MentionDirective implements OnChanges {
   private lastKeyCode: number;
 
   constructor(
+    // tslint:disable-next-line:variable-name
     private _element: ElementRef,
+    // tslint:disable-next-line:variable-name
     private _componentResolver: ComponentFactoryResolver,
+    // tslint:disable-next-line:variable-name
     private _viewContainerRef: ViewContainerRef
   ) { }
 
   ngOnChanges(changes: SimpleChanges) {
     // console.log('config change', changes);
-    if (changes['mention'] || changes['mentionConfig']) {
+    if (changes.mention || changes.mentionConfig) {
       this.updateConfig();
     }
   }
@@ -303,7 +307,7 @@ export class MentionDirective implements OnChanges {
           if (this.activeConfig.returnTrigger) {
             const triggerChar = (this.searchString || event.keyCode === KEY_BACKSPACE) ? val.substring(this.startPos, this.startPos + 1) : '';
             this.searchTerm.emit(triggerChar + this.searchString);
-          } 
+          }
           else {
             this.searchTerm.emit(this.searchString);
           }
