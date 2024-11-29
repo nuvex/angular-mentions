@@ -11,7 +11,7 @@ and content editable fields.
 
 To install and start the demo application:
 
-    git clone https://github.com/dmacfarlane/angular-mentions.git
+    git clone https://github.com/nuvex/angular-mentions.git
     cd angular-mentions
     npm install
     ng serve

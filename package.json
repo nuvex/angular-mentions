@@ -1,6 +1,6 @@
 {
-  "name": "angular-mentions",
-  "version": "0.0.0",
+  "name": "@nuvex/angular-mentions",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -51,5 +51,12 @@
     "ts-node": "^10.9.2",
     "tslint": "~6.1.3",
     "typescript": "~5.6.2"
-  }
+  },
+  "description": "Simple Angular mentions inspired by [Ment.io](https://github.com/jeff-collins/ment.io).",
+  "main": "dist/angular-mentions/index.d.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "author": "",
+  "license": "ISC"
 }
